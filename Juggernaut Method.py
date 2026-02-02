@@ -3,29 +3,16 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox, filedialog
 
+# Rounds to the nearest 5 lbs instead of building plate-by-plate
 def round_to_nearest_plate(weight):
-    plates = [45, 35, 25, 10, 5]
-    bar_weight = 45
-    if weight < bar_weight:
-        return bar_weight
-
-    remaining_weight = (weight - bar_weight) / 2
-    total_weight = bar_weight
-    used_plates = []
-
-    for plate in plates:
-        while remaining_weight >= plate:
-            remaining_weight -= plate
-            used_plates.append(plate)
-            total_weight += plate * 2
-
-    return total_weight
+    return round(weight / 5) * 5
 
 def generate_juggernaut_csv(bench_max, squat_max, deadlift_max, filename):
+    # Use full 1RM (no 90% reduction)
     training_max = {
-        "Bench": bench_max * 0.9,
-        "Squat": squat_max * 0.9,
-        "Deadlift": deadlift_max * 0.9
+        "Bench": bench_max,
+        "Squat": squat_max,
+        "Deadlift": deadlift_max
     }
 
     waves = {
@@ -73,7 +60,8 @@ def generate_juggernaut_csv(bench_max, squat_max, deadlift_max, filename):
                     squat_weight = round_to_nearest_plate(training_max["Squat"] * (waves[wave][week - 1] / 100))
                     deadlift_weight = round_to_nearest_plate(training_max["Deadlift"] * (waves[wave][week - 1] / 100))
 
-                csv_data.append([f"{wave:<15}", f"Week {week}", f"{rep_set_format:<15}", f"{bench_weight:<15}", f"{squat_weight:<15}", f"{deadlift_weight:<15}"])
+                csv_data.append([f"{wave:<15}", f"Week {week}", f"{rep_set_format:<15}",
+                                 f"{bench_weight:<15}", f"{squat_weight:<15}", f"{deadlift_weight:<15}"])
             else:
                 for rep_set in week_3_reps[wave]:
                     rep_set_format = f"{rep_set[0]}% x {rep_set[1]} reps"
@@ -81,7 +69,8 @@ def generate_juggernaut_csv(bench_max, squat_max, deadlift_max, filename):
                     squat_weight = round_to_nearest_plate(training_max["Squat"] * (rep_set[0] / 100))
                     deadlift_weight = round_to_nearest_plate(training_max["Deadlift"] * (rep_set[0] / 100))
 
-                    csv_data.append([f"{wave:<15}", f"Week 3", f"{rep_set_format:<15}", f"{bench_weight:<15}", f"{squat_weight:<15}", f"{deadlift_weight:<15}"])
+                    csv_data.append([f"{wave:<15}", f"Week 3", f"{rep_set_format:<15}",
+                                     f"{bench_weight:<15}", f"{squat_weight:<15}", f"{deadlift_weight:<15}"])
 
         csv_data.append(["", "", "", "", "", ""])
 
